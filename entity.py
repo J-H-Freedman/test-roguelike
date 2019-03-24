@@ -7,7 +7,20 @@ class Entity:
     '''
     A generic object to represent players, enemies, items, etc.
     '''
-    def __init__(self, x, y, char, color, name, blocks = False, render_order=RenderOrder.CORPSE , fighter = None, ai = None):
+    def __init__(
+        self,
+        x,
+        y,
+        char,
+        color,
+        name,
+        blocks = False,
+        render_order=RenderOrder.CORPSE,
+        fighter = None,
+        ai = None,
+        item=None,
+        inventory=None,
+    ):
         self.x = x
         self.y = y
         self.char = char
@@ -17,12 +30,20 @@ class Entity:
         self.render_order = render_order
         self.fighter = fighter
         self.ai = ai
+        self.item = item
+        self.inventory = inventory
 
         if self.fighter:
             self.fighter.owner = self
 
         if self.ai:
             self.ai.owner = self
+
+        if self.item:
+            self.item.owner = self
+
+        if self.inventory:
+            self.inventory.owner = self
 
     def move(self, dx, dy):
         # Move the entity by a given amount
@@ -48,8 +69,13 @@ class Entity:
         # Scan the current map each turn and set all the walls as unwalkable
         for y1 in range(game_map.height):
             for x1 in range(game_map.width):
-                libtcod.map_set_properties(fov, x1, y1, not game_map.tiles[x1][y1].block_sight,
-                                           not game_map.tiles[x1][y1].blocked)
+                libtcod.map_set_properties(
+                    fov,
+                    x1,
+                    y1,
+                    not game_map.tiles[x1][y1].block_sight,
+                    not game_map.tiles[x1][y1].blocked
+                )
         # scan all the objects to see if there are objects the must be navigated around
         # Check also that the object isn't self or the target (so that the start and end points are free)
         # The AI class handles the situation if self is next to the target so it will not use this A* function anyway

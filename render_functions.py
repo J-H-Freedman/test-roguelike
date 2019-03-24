@@ -2,6 +2,10 @@ import libtcodpy as libtcod
 
 from enum import Enum
 
+from game_states import GameStates
+
+from menus import  inventory_menu
+
 class RenderOrder(Enum):
     CORPSE = 1
     ITEM = 2
@@ -45,6 +49,7 @@ def render_all(con,
                panel_y,
                mouse,
                colors,
+               game_state,
                ):
     if fov_recompute:
         for y in range(game_map.height):
@@ -92,6 +97,16 @@ def render_all(con,
                              get_names_under_mouse(mouse, entities, fov_map))
 
     libtcod.console_blit(panel, 0, 0, screen_width, panel_height, 0, 0, panel_y)
+
+    if game_state == GameStates.SHOW_INVENTORY:
+        inventory_menu(
+            con,
+            'Press the key next to an item to use it, or Esc to cancel.\n',
+            player.inventory,
+            50,
+            screen_width,
+            screen_height,
+        )
 
 def clear_all(con, entities):
     for entity in entities:
